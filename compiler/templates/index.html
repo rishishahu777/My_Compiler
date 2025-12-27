@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Language Interpreter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            resize: none;
+            transition: border-color 0.3s;
+            background: #f9f9f9;
+            min-height: 400px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        #output {
+            flex: 1;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #1e1e1e;
+            color: #00ff00;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            min-height: 400px;
+        }
+
+        .button-container {
+            padding: 0 30px 30px 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #runBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #runBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        #runBtn:active {
+            transform: translateY(0);
+        }
+
+        #clearBtn {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        #clearBtn:hover {
+            background: #e0e0e0;
+        }
+
+        .info-box {
+            margin: 0 30px 30px 30px;
+            padding: 20px;
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            border-radius: 10px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #bb00ffff;
+            font-weight: 600;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .info-box li {
+            margin: 5px 0;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .error {
+            color: #ff4444 !important;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            textarea, #output {
+                min-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Custom Language Interpreter</h1>
+            <p>Write code in your custom language and see it execute!</p>
+        </div>
+
+        <div class="info-box">
+            <h3>📖 Language Syntax:</h3>
+            <ul>
+                <li><code>maanlo</code> - Declare/assign variables (e.g., <code>maanlo x = 5</code>)</li>
+                <li><code>batao</code> - Print values (e.g., <code>batao x</code>)</li>
+                <li><code>+</code> - Addition operator (e.g., <code>maanlo z = x + y</code>)</li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <div class="section-title">Code Editor</div>
+                <textarea id="codeInput" placeholder="maanlo x = 10
+maanlo y = 20
+maanlo z = x + y
+batao z"></textarea>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Output Console</div>
+                <div id="output">Ready to execute...</div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button id="runBtn">▶ Run Code</button>
+            <button id="clearBtn">🗑 Clear</button>
+        </div>
+    </div>
+
+    <script>
+        const codeInput = document.getElementById('codeInput');
+        const output = document.getElementById('output');
+        const runBtn = document.getElementById('runBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        // Set default example code
+        codeInput.value = `maanlo x = 10
+maanlo y = 20
+maanlo z = x + y // x-y // x*y // x/y
+batao z`;
+
+        runBtn.addEventListener('click', async () => {
+            const code = codeInput.value.trim();
+            
+            if (!code) {
+                output.textContent = 'Error: Please enter some code!';
+                output.classList.add('error');
+                return;
+            }
+
+            output.classList.remove('error');
+            output.textContent = 'Executing...';
+            runBtn.classList.add('loading');
+
+            try {
+                const response = await fetch('/execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code: code })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    output.textContent = result.output || '(No output)';
+                } else {
+                    output.textContent = `Error: ${result.error}`;
+                    output.classList.add('error');
+                }
+            } catch (error) {
+                output.textContent = `Connection Error: ${error.message}`;
+                output.classList.add('error');
+            } finally {
+                runBtn.classList.remove('loading');
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            codeInput.value = '';
+            output.textContent = 'Ready to execute...';
+            output.classList.remove('error');
+        });
+
+        // Allow Ctrl+Enter to run code
+        codeInput.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                runBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
